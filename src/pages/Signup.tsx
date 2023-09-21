@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import InputField from "../components/Form/InputField";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { auth, googleProvider } from "../config/firebase-config";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEmailSignupMutation, useGoogleSignupMutation } from "../store";
 
 interface IUserData {
   email: string;
@@ -12,12 +11,14 @@ interface IUserData {
 }
 
 const Signup = () => {
+  const [emailSignup] = useEmailSignupMutation();
+
   const initialState: IUserData = {
     email: "",
     password: "",
   };
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [data, setData] = useState(initialState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,12 +27,35 @@ const Signup = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await createUserWithEmailAndPassword(auth, data.email, data.password);
+    await toast
+      .promise(emailSignup(data).unwrap(), {
+        pending: "Creating user...",
+        success: "Successfully created user!",
+        error: "Could not create user!",
+      })
+      .then((res) => console.log(res))
+      .then(() => {
+        navigate("/login");
+        toast.info("Please login to continue");
+      })
+      .catch((err) => toast.error(err));
   };
-  console.log("auth", auth);
+
+  const [googleSignup] = useGoogleSignupMutation();
 
   const GoogleAuth = async () => {
-    await signInWithPopup(auth, googleProvider);
+    await toast
+      .promise(googleSignup(null).unwrap(), {
+        pending: "Creating user...",
+        success: "Successfully created user!",
+        error: "Could not create user!",
+      })
+      .then((res) => console.log(res))
+      .then(() => {
+        navigate("/login");
+        toast.info("Please login to continue");
+      })
+      .catch((err) => toast.error(err));
   };
 
   return (
