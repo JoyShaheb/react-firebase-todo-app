@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ErrorPage, Home } from "./pages";
+import { ErrorPage, Home, Signup, Login } from "./pages";
 import Sidebar from "./components/Sidebar/Sidebar";
 const App = () => {
   return (
@@ -7,6 +7,8 @@ const App = () => {
       <Sidebar>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </Sidebar>

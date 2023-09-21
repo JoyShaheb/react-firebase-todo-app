@@ -20,11 +20,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
 import { themeSwitch, ThemeTypesEnum } from "../../store/Slices/systemSlice";
 import { gradientTextStyles } from "../Text/TextStyles";
+import { signOut } from "firebase/auth";
+import { auth } from "../../config/firebase-config";
 
 const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
+  const logoutFn = async () => {
+    await signOut(auth);
+  };
 
   const mode: string = useSelector((x: RootState) => x.system.mode);
   // const token: string = useSelector((x: RootState) => x.user.token);
@@ -112,9 +117,10 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
             {/* {token && ( */}
             <NavLink
-              to="/login"
+              to="/signup"
               label="Signout"
               icon={<ArrowRightOnRectangleIcon className={iconStyles} />}
+              onClick={logoutFn}
             />
             {/* )} */}
 
