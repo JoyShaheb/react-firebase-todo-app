@@ -1,14 +1,28 @@
 import React, { useState } from "react";
 import InputField from "../components/Form/InputField";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 // import { useDispatch } from "react-redux";
 // import { auth } from "../config/firebase-config";
-import { IUserSignInData } from "../store/API/userAuthAPI";
+import {
+  IUserSignInData,
+  useGoogleSignupMutation,
+} from "../store/API/userAuthAPI";
 // import { Auth, AuthProvider } from "firebase/auth";
+import {
+  useEmailLoginMutation,
+  useFacebookSignupMutation,
+} from "../store/API/userAuthAPI";
+import googleIcon from "../assets/google.svg";
+import facebookIcon from "../assets/facebook.svg";
+import AuthButtons from "../components/Buttons/AuthButtons";
 
 const Login = () => {
+  const [emailLogin] = useEmailLoginMutation();
+  const [googleSignup] = useGoogleSignupMutation();
+  const [facebookSignup] = useFacebookSignupMutation();
+
   // const x: AuthProvider = auth;
   // console.log("auth", x);
   // const dispatch = useDispatch();
@@ -26,7 +40,46 @@ const Login = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    await toast
+      .promise(emailLogin(data).unwrap(), {
+        pending: "Logging in...",
+        success: "Successfully Logged in!",
+        error: "Could not login!",
+      })
+      .then((res) => console.log(res))
+      .catch((err) => toast.error(err));
   };
+
+  const GoogleAuth = async () => {
+    await toast
+      .promise(googleSignup(null).unwrap(), {
+        pending: "Logging in...",
+        success: "Successfully Logged in!",
+        error: "Could not login!",
+      })
+      .then((res) => console.log(res))
+      .then(() => {
+        // navigate("/login");
+        // toast.info("Please login to continue");
+      })
+      .catch((err) => toast.error(err));
+  };
+
+  const FacebookAuth = async () => {
+    await toast
+      .promise(facebookSignup(null).unwrap(), {
+        pending: "Logging in...",
+        success: "Successfully Logged in!",
+        error: "Could not login!",
+      })
+      .then((res) => console.log(res))
+      .then(() => {
+        // navigate("/login");
+        // toast.info("Please login to continue");
+      })
+      .catch((err) => toast.error(err));
+  };
+
   return (
     <section className="">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -35,13 +88,17 @@ const Login = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Login to account
             </h1>
-            <div className="flex justify-between">
-              <button onClick={() => console.log("skdjcnhjnsdc")}>
-                Signup with google
-              </button>
-              <button onClick={() => console.log("skdjcnhjnsdc")}>
-                Signup with Facebook
-              </button>
+            <div className="flex justify-between gap-3">
+              <AuthButtons
+                icon={googleIcon}
+                text="Login with google"
+                onClick={GoogleAuth}
+              />
+              <AuthButtons
+                icon={facebookIcon}
+                text="Login with Facebook"
+                onClick={FacebookAuth}
+              />
             </div>
             <form className="space-y-4 md:space-y-6" onSubmit={onSubmit}>
               <InputField

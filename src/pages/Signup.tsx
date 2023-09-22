@@ -3,7 +3,14 @@ import InputField from "../components/Form/InputField";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEmailSignupMutation, useGoogleSignupMutation } from "../store";
+import {
+  useEmailSignupMutation,
+  useFacebookSignupMutation,
+  useGoogleSignupMutation,
+} from "../store";
+import googleIcon from "../assets/google.svg";
+import facebookIcon from "../assets/facebook.svg";
+import AuthButtons from "../components/Buttons/AuthButtons";
 
 interface IUserData {
   email: string;
@@ -12,6 +19,7 @@ interface IUserData {
 
 const Signup = () => {
   const [emailSignup] = useEmailSignupMutation();
+  const [facebookSignup] = useFacebookSignupMutation();
 
   const initialState: IUserData = {
     email: "",
@@ -58,6 +66,21 @@ const Signup = () => {
       .catch((err) => toast.error(err));
   };
 
+  const FacebookAuth = async () => {
+    await toast
+      .promise(facebookSignup(null).unwrap(), {
+        pending: "Logging in...",
+        success: "Successfully Logged in!",
+        error: "Could not login!",
+      })
+      .then((res) => console.log(res))
+      .then(() => {
+        // navigate("/login");
+        // toast.info("Please login to continue");
+      })
+      .catch((err) => toast.error(err));
+  };
+
   return (
     <section className="">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -66,9 +89,17 @@ const Signup = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign Up for a new account
             </h1>
-            <div className="flex justify-between">
-              <button onClick={GoogleAuth}>Signup with google</button>
-              <button onClick={GoogleAuth}>Signup with Facebook</button>
+            <div className="flex justify-between gap-3">
+              <AuthButtons
+                icon={googleIcon}
+                text="Signup with google"
+                onClick={GoogleAuth}
+              />
+              <AuthButtons
+                icon={facebookIcon}
+                text="Signup with Facebook"
+                onClick={FacebookAuth}
+              />
             </div>
             <form className="space-y-4 md:space-y-6" onSubmit={onSubmit}>
               <InputField

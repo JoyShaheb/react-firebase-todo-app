@@ -1,5 +1,9 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { auth, googleProvider } from "../../config/firebase-config";
+import {
+  auth,
+  googleProvider,
+  facebookProvider,
+} from "../../config/firebase-config";
 import {
   createUserWithEmailAndPassword,
   UserCredential,
@@ -72,6 +76,21 @@ export const UserAuthAPI = createApi({
       },
       invalidatesTags: ["User"],
     }),
+    facebookSignup: builder.mutation<UserCredential, null>({
+      queryFn: async () => {
+        try {
+          const response = await signInWithPopup(auth, facebookProvider);
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -79,4 +98,5 @@ export const {
   useEmailSignupMutation,
   useEmailLoginMutation,
   useGoogleSignupMutation,
+  useFacebookSignupMutation,
 } = UserAuthAPI;

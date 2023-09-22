@@ -8,6 +8,7 @@ import {
   useEmailSignupMutation,
   useGoogleSignupMutation,
   useEmailLoginMutation,
+  useFacebookSignupMutation,
 } from "./API/userAuthAPI";
 
 const persistConfig = {
@@ -41,4 +42,5 @@ export {
   useEmailSignupMutation,
   useGoogleSignupMutation,
   useEmailLoginMutation,
+  useFacebookSignupMutation,
 };
