@@ -7,6 +7,7 @@ import {
   UserAuthAPI,
   useEmailSignupMutation,
   useGoogleSignupMutation,
+  useEmailLoginMutation,
 } from "./API/userAuthAPI";
 
 const persistConfig = {
@@ -35,4 +36,9 @@ export type AppDispatch = typeof store.dispatch;
 
 setupListeners(store.dispatch);
 
-export { useEmailSignupMutation, useGoogleSignupMutation };
+export {
+  // UserAuthAPI,
+  useEmailSignupMutation,
+  useGoogleSignupMutation,
+  useEmailLoginMutation,
+};

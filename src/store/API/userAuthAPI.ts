@@ -4,18 +4,21 @@ import {
   createUserWithEmailAndPassword,
   UserCredential,
   signInWithPopup,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
+
+export interface IUserSignInData {
+  email: string;
+  password: string;
+}
 
 export const UserAuthAPI = createApi({
   reducerPath: "UserAuthAPI",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["User", "UpdateUser"],
   endpoints: (builder) => ({
-    emailSignup: builder.mutation<
-      UserCredential,
-      { email: string; password: string }
-    >({
-      queryFn: async (user: { email: string; password: string }) => {
+    emailSignup: builder.mutation<UserCredential, IUserSignInData>({
+      queryFn: async (user: IUserSignInData) => {
         try {
           const { email, password } = user;
           const response: UserCredential = await createUserWithEmailAndPassword(
@@ -29,6 +32,26 @@ export const UserAuthAPI = createApi({
         } catch (err) {
           return {
             error: (err as Error)?.message, // Added type assertion to access message property
+          };
+        }
+      },
+      invalidatesTags: ["User"],
+    }),
+    emailLogin: builder.mutation<UserCredential, IUserSignInData>({
+      queryFn: async (user: IUserSignInData) => {
+        try {
+          const { email, password } = user;
+          const response: UserCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
           };
         }
       },
@@ -52,4 +75,8 @@ export const UserAuthAPI = createApi({
   }),
 });
 
-export const { useEmailSignupMutation, useGoogleSignupMutation } = UserAuthAPI;
+export const {
+  useEmailSignupMutation,
+  useEmailLoginMutation,
+  useGoogleSignupMutation,
+} = UserAuthAPI;
