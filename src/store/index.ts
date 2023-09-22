@@ -3,6 +3,11 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { systemSlice } from "./Slices/systemSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import {
+  useEmailSignupMutation,
+  useGoogleSignupMutation,
+  useEmailLoginMutation,
+} from "./API/userAuthAPI";
 
 const persistConfig = {
   key: "root",
@@ -27,3 +32,9 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 setupListeners(store.dispatch);
+
+export {
+  useEmailSignupMutation,
+  useGoogleSignupMutation,
+  useEmailLoginMutation,
+};

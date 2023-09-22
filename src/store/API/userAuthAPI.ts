@@ -1,45 +1,82 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import { auth, googleProvider } from "../../config/firebase-config";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  UserCredential,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
+export interface IUserSignInData {
+  email: string;
+  password: string;
+}
 
 export const UserAuthAPI = createApi({
   reducerPath: "UserAuthAPI",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["User", "UpdateUser"],
   endpoints: (builder) => ({
-    createUser: builder.mutation({
-      query: (signupParams) => ({
-        url: "/register",
-        method: "POST",
-        body: signupParams,
-      }),
+    emailSignup: builder.mutation<UserCredential, IUserSignInData>({
+      queryFn: async (user: IUserSignInData) => {
+        try {
+          const { email, password } = user;
+          const response = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
       invalidatesTags: ["User"],
     }),
-    loginUser: builder.mutation({
-      query: (loginParams) => ({
-        url: "/login",
-        method: "POST",
-        body: loginParams,
-      }),
+    emailLogin: builder.mutation<UserCredential, IUserSignInData>({
+      queryFn: async (user: IUserSignInData) => {
+        try {
+          const { email, password } = user;
+          const response = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
       invalidatesTags: ["User"],
     }),
-
-    updateUser: builder.mutation({
-      query: ({ id, body }) => ({
-        url: `/update/${id}`,
-        method: "PUT",
-        body,
-      }),
-      invalidatesTags: ["UpdateUser"],
-    }),
-    getUser: builder.query({
-      query: ({ id }) => `/get-one-user/:${id}`,
-      providesTags: ["User"],
+    googleSignup: builder.mutation<UserCredential, null>({
+      queryFn: async () => {
+        try {
+          const response = await signInWithPopup(auth, googleProvider);
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
+      invalidatesTags: ["User"],
     }),
   }),
 });
 
 export const {
-  useCreateUserMutation,
-  useLoginUserMutation,
-  useUpdateUserMutation,
-  useGetUserQuery,
+  useEmailSignupMutation,
+  useGoogleSignupMutation,
+  useEmailLoginMutation,
 } = UserAuthAPI;

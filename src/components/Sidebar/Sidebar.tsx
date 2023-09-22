@@ -42,6 +42,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     document.documentElement.classList.toggle(ThemeTypesEnum.DARK, isDarkMode);
   }, [isDarkMode]);
 
+  const brandName: string = "Todo App";
+
   return (
     <div>
       <button
@@ -75,7 +77,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           <div
             className={`${gradientTextStyles} font-bold text-center text-2xl mb-3`}
           >
-            Ticket Sales
+            {brandName}
           </div>
           <ul className="space-y-2 font-medium">
             {/* {token && ( */}

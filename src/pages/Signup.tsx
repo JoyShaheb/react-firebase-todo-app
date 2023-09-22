@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import InputField from "../components/Form/InputField";
-// import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { auth, googleProvider } from "../config/firebase-config";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 // import { useNavigate } from "react-router-dom";
-
-interface IUserData {
-  email: string;
-  password: string;
-}
+import { IUserSignInData } from "../store/API/userAuthAPI";
+import {
+  useEmailSignupMutation,
+  useGoogleSignupMutation,
+} from "../store/API/userAuthAPI";
+import { toast } from "react-toastify";
 
 const Signup = () => {
-  const initialState: IUserData = {
+  const [emailSignup] = useEmailSignupMutation();
+  const [googleSignup] = useGoogleSignupMutation();
+
+  const initialState: IUserSignInData = {
     email: "",
     password: "",
   };
@@ -26,12 +27,25 @@ const Signup = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await createUserWithEmailAndPassword(auth, data.email, data.password);
+    await toast
+      .promise(emailSignup(data).unwrap(), {
+        pending: "Signing up...",
+        success: "Sign up successful",
+        error: "Sign up failed",
+      })
+      .then((res) => console.log("response", res))
+      .catch((err: Error) => toast.error(err as unknown as string));
   };
-  console.log("auth", auth);
 
   const GoogleAuth = async () => {
-    await signInWithPopup(auth, googleProvider);
+    await toast
+      .promise(googleSignup(null).unwrap(), {
+        pending: "Signing up...",
+        success: "Sign up successful",
+        error: "Sign up failed",
+      })
+      .then((res) => console.log("response", res))
+      .catch((err: Error) => toast.error(err as unknown as string));
   };
 
   return (
@@ -42,6 +56,10 @@ const Signup = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign Up for a new account
             </h1>
+            <div className="flex justify-between">
+              <button onClick={GoogleAuth}>Signup with google</button>
+              <button onClick={GoogleAuth}>Signup with facebook</button>
+            </div>
             <form className="space-y-4 md:space-y-6" onSubmit={onSubmit}>
               <InputField
                 label="Your Email"
@@ -61,7 +79,6 @@ const Signup = () => {
                 type="password"
                 value={data.password}
               />
-              <button onClick={GoogleAuth}>Signup with google</button>
               <button
                 type="submit"
                 className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
